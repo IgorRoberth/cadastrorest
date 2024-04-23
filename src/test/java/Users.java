@@ -1,7 +1,7 @@
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 
-@JsonFilter("usuarios") // Supondo que você tenha configurado um filtro com esse nome
+@JsonFilter("usuarios")
 public class Users {
 
     private Long id;
