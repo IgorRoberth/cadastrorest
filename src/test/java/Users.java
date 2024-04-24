@@ -1,10 +1,15 @@
 
 import com.fasterxml.jackson.annotation.JsonFilter;
+import jakarta.persistence.*;
 
+@Entity
 @JsonFilter("usuarios")
 public class Users {
 
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    private Integer id;
     private String nome;
     private String username;
     private String email;
@@ -14,7 +19,8 @@ public class Users {
     public Users() {
     }
 
-    public Users(String nome, String username, String email, String senha, String telefone) {
+    public Users(Integer id, String nome, String username, String email, String senha, String telefone) {
+        this.id = id;
         this.nome = nome;
         this.username = username;
         this.email = email;
@@ -22,52 +28,28 @@ public class Users {
         this.telefone = telefone;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getSenha() {
         return senha;
     }
 
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
     public String getTelefone() {
         return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
     }
 
     @Override
