@@ -28,7 +28,7 @@ public class RestAssured {
     }
 
     @Test
-    public void listarTodosUsuarios() {
+    public void listarTodosUsuarios200() {
 
         given()
                 .when()
@@ -40,7 +40,7 @@ public class RestAssured {
     }
 
     @Test
-    public void verificarUsuarioUnico() {
+    public void verificarUsuarioUnico200() {
 
         Users usuario = given()
                 .queryParam("nome", "Jorgino Alfredo Gonçalves")
@@ -61,7 +61,7 @@ public class RestAssured {
     }
 
     @Test
-    public void deveSalvarUsuario() {
+    public void deveSalvarUsuario201() {
 
         given()
                 .log().all()
@@ -86,7 +86,7 @@ public class RestAssured {
     }
 
     @Test
-    public void validarUsernameEmUso() {
+    public void validarUsernameEmUso409() {
 
         given()
                 .log().all()
@@ -106,7 +106,7 @@ public class RestAssured {
     }
 
     @Test
-    public void validarEmailEmUso() {
+    public void validarEmailEmUso409() {
 
         given()
                 .log().all()
@@ -126,7 +126,7 @@ public class RestAssured {
     }
 
     @Test
-    public void validarTelefoneEmUso() {
+    public void validarTelefoneEmUso409() {
 
         given()
                 .log().all()
@@ -146,7 +146,7 @@ public class RestAssured {
     }
 
     @Test
-    public void editaUsuarioExistente() {
+    public void editaUsuarioExistente200() {
 
         Response response = given()
                 .contentType("application/json")
@@ -168,7 +168,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeEdicaoComTelefoneIncorreto() {
+    public void tentativaDeEdicaoComTelefoneIncorreto400() {
 
         String mensagemEsperada = "O campo telefone não pode conter letras ou qualquer tipo de caracteres especiais.";
 
@@ -191,7 +191,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeEdicaoComUsuarioInexistente() {
+    public void tentativaDeEdicaoComUsuarioInexistente404() {
 
         Response response = given()
                 .log().all()
@@ -212,7 +212,7 @@ public class RestAssured {
     }
 
     @Test
-    public void realizarLoginComSucesso() {
+    public void realizarLoginComSucesso200() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -234,7 +234,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeLoginComUsernameE_SenhaEmBranco() {
+    public void tentativaDeLoginComUsernameE_SenhaEmBranco400() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -255,7 +255,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeLoginComSenhaIncorreta() {
+    public void tentativaDeLoginComSenhaIncorreta400() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -276,7 +276,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeLoginComUsuarioInexistente() {
+    public void tentativaDeLoginComUsuarioInexistente400() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -297,7 +297,7 @@ public class RestAssured {
     }
 
     @Test
-    public void deveDeletarUsuarioDoBanco() {
+    public void deveDeletarUsuarioDoBanco204() {
 
         given()
                 .log().all()
@@ -310,7 +310,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentartivaDeExclusaoUsuarioInexistente() {
+    public void tentartivaDeExclusaoUsuarioInexistente404() {
 
         given()
                 .log().all()
@@ -323,7 +323,7 @@ public class RestAssured {
     }
 
     @Test
-    public void validarUmNovoUsuárioComCampoNomeSemPreencher() {
+    public void validarUmNovoUsuárioComCampoNomeSemPreencher400() {
         given()
                 .log().all()
                 .contentType("application/json")
