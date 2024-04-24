@@ -8,20 +8,21 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
+
 import static io.restassured.RestAssured.registerParser;
 import static org.hamcrest.Matchers.*;
 
 public class RestAssured {
 
-    private static String baseURI;
+    public static String baseURI;
 
     @BeforeClass
     public static void setup() {
+
         RestAssured.baseURI = "http://localhost:8002";
         registerParser("text/plain", Parser.TEXT);
     }
@@ -31,7 +32,7 @@ public class RestAssured {
 
         given()
                 .when()
-                .get("http://localhost:8002/usuarios")
+                .get(baseURI+"/usuarios")
                 .then()
                 .statusCode(200)
                 .log().all()
@@ -44,7 +45,7 @@ public class RestAssured {
         Users usuario = given()
                 .queryParam("nome", "Jorgino Alfredo Gonçalves")
                 .when()
-                .get("http://localhost:8002/usuarios")
+                .get(baseURI+"/usuarios")
                 .then()
                 .statusCode(200)
                 .extract().jsonPath().getObject("find{it.nome == 'Jorgino Alfredo Gonçalves'}", Users.class);
@@ -71,7 +72,7 @@ public class RestAssured {
                         "\"senha\": \"senhaVitor\", " +
                         "\"telefone\": \"11997299814\"}")
                 .when()
-                .post("http://localhost:8002/usuarios")
+                .post(baseURI+"/usuarios")
                 .then()
                 .log().all()
                 .statusCode(201)
@@ -96,7 +97,7 @@ public class RestAssured {
                         "\"senha\": \"senhaTiago\", " +
                         "\"telefone\": \"11990234528\"}")
                 .when()
-                .post("http://localhost:8002/usuarios")
+                .post(baseURI+"/usuarios")
                 .then()
                 .log().all()
                 .statusCode(409)
@@ -116,7 +117,7 @@ public class RestAssured {
                         "\"senha\": \"senhaTiago\", " +
                         "\"telefone\": \"11990234528\"}")
                 .when()
-                .post("http://localhost:8002/usuarios")
+                .post(baseURI+"/usuarios")
                 .then()
                 .log().all()
                 .statusCode(409)
@@ -130,13 +131,13 @@ public class RestAssured {
         given()
                 .log().all()
                 .contentType("application/json")
-                .body("{\"nome\": \"Luiz Porto\"," +
-                        "\"username\": \"Luiz\"," +
-                        "\"email\": \"luizporto@gmail.com\"," +
-                        "\"senha\": \"senhaLuiz\", " +
+                .body("{\"nome\": \"Flasino\"," +
+                        "\"username\": \"Flausino\"," +
+                        "\"email\": \"flausinoporto@gmail.com\"," +
+                        "\"senha\": \"senhaFlau\", " +
                         "\"telefone\": \"11990234528\"}")
                 .when()
-                .post("http://localhost:8002/usuarios")
+                .post(baseURI+"/usuarios")
                 .then()
                 .log().all()
                 .statusCode(409)
@@ -233,7 +234,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeLoginComUsernameSenhaNaoFornecidos() {
+    public void tentativaDeLoginComUsernameE_SenhaEmBranco() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -301,7 +302,7 @@ public class RestAssured {
         given()
                 .log().all()
                 .when()
-                .delete("http://localhost:8002/usuarios/contadelete/Roberto")
+                .delete(baseURI+"/usuarios/contadelete/Luiz")
                 .then()
                 .log().all()
                 .statusCode(204)
@@ -314,7 +315,7 @@ public class RestAssured {
         given()
                 .log().all()
                 .when()
-                .delete("http://localhost:8002/usuarios/contadelete/Fraga")
+                .delete(baseURI+"/usuarios/contadelete/Fraga")
                 .then()
                 .log().all()
                 .statusCode(404)
