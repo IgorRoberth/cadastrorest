@@ -8,6 +8,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -302,7 +304,7 @@ public class RestAssured {
         given()
                 .log().all()
                 .when()
-                .delete(baseURI+"/usuarios/contadelete/Luiz")
+                .delete(baseURI+"/usuarios/contadelete/Flavio")
                 .then()
                 .log().all()
                 .statusCode(204)
@@ -340,5 +342,241 @@ public class RestAssured {
                 .contentType("text/plain")
                 .body(Matchers.equalTo("Para concluir o cadastro, é necessário preencher todos os campos."))
         ;
+    }
+
+    @Test
+    public void tentativaDeEdicaoDeUsuarioComDadosInvalidos400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros\"," +
+                        "\"username\": \"Carla\"," +
+                        "\"email\": \"carla@gm\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        String responseBody = response.getBody().asString();
+        Assert.assertEquals(400, response.getStatusCode());
+        System.out.println("Mensagem de erro: " + responseBody);
+        System.out.println("Código de status: " + response.getStatusCode());
+    }
+
+    @Test
+    public void tentativaDeEdicaoDeUsuarioComServidoComErroInterno500() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros Noronha\"," +
+                        "\"username\": \"Carla\"," +
+                        "\"email\": \"carla@gmail.com\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        String responseBody = response.getBody().asString();
+        Assert.assertEquals(500, response.getStatusCode());
+        System.out.println("Mensagem de erro: " + responseBody);
+        System.out.println("Código de status: " + response.getStatusCode());
+    }
+
+    @Test
+    public void tentarCriarUmNovoUsuárioQuando_O_ServidorEstaComErroInterno500() {
+
+        given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Bauler\"," +
+                        "\"username\": \"Flavio\"," +
+                        "\"email\": \"flavio@gmail.com.br\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI+"/usuarios")
+                .then()
+                .log().all()
+                .statusCode(500)
+                ;
+    }
+
+    @Test
+    public void tentativaDeLogin_O_ServidorComErroInterno500() {
+
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("username", "Roberto");
+        credentials.put("senha", "senhaRoberto");
+
+        String jsonCredentials = new Gson().toJson(credentials);
+
+        ValidatableResponse body = given()
+                .log().all()
+                .header("Content-Type", "application/json")
+                .body(jsonCredentials)
+                .when()
+                .post(baseURI + "/usuarios/login")
+                .then()
+                .statusCode(500)
+                ;
+    }
+
+    @Test
+    public void tentarExecutarExclusãoDeUsuarioQuando_O_ServidorEstaComErroInterno500() {
+
+        given()
+                .log().all()
+                .when()
+                .delete(baseURI+"/usuarios/contadelete/Carla")
+                .then()
+                .log().all()
+                .statusCode(500)
+        ;
+    }
+
+    @Test
+    public void listarUsuáriosQuando_O_ServidorEstaComErroInterno500() {
+
+        given()
+                .when()
+                .get(baseURI+"/usuarios")
+                .then()
+                .statusCode(500)
+                .log().all()
+        ;
+    }
+
+    @Test
+    public void tentativaDeListarUsuariosComMetodoPost405() {
+
+        given()
+                .when()
+                .post(baseURI+"/usuarios")
+                .then()
+                .statusCode(415)
+                .log().all()
+        ;
+    }
+
+    @Test
+    public void tentativaDeInclusãoDeUsuárioSemNome400() {
+
+       Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"\"," +
+                        "\"username\": \"Flavio\"," +
+                        "\"email\": \"flavio@gmail.com.br\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI+"/usuarios")
+                .thenReturn();
+
+        String responseBody = response.getBody().asString();
+        Assert.assertEquals(400, response.getStatusCode());
+        System.out.println("Mensagem de erro: " + responseBody);
+        System.out.println("Código de status: " + response.getStatusCode());
+    }
+
+    @Test
+    public void tentativaDeInclusãoDeUsuárioSemUsername400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\": \"\"," +
+                        "\"email\": \"flavio@gmail.com.br\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI+"/usuarios")
+                .thenReturn();
+
+        String responseBody = response.getBody().asString();
+        Assert.assertEquals(400, response.getStatusCode());
+        System.out.println("Mensagem de erro: " + responseBody);
+        System.out.println("Código de status: " + response.getStatusCode());
+    }
+
+    @Test
+    public void tentativaDeInclusãoDeUsuárioComEmailEscritoDeFormaIncorreta400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                            "\"username\":\"Flavio\"," +
+                            "\"email\": \"flavio@gm\"," +
+                            "\"senha\": \"senhaFlavio\", " +
+                            "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(400)
+                .extract().response();
+            System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void tentativaDeCriarUsuárioComCampoSenhaVazio400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\":\"Flavio\"," +
+                        "\"email\": \"flavio@gmail.com\"," +
+                        "\"senha\": \"\", " +
+                        "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(400)
+                .extract().response();
+        System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void tentativaDeCriarUsuárioComCampoTelefoneInvalido400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\":\"Flavio\"," +
+                        "\"email\": \"flavio@gmail.com\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"119972A94629\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(400)
+                .extract().response();
+        System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void tentativaDeCriarUsuárioComUsernameJaEmUso400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\":\"Flavio\"," +
+                        "\"email\": \"renan@email.com\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11997294629\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(409)
+                .extract().response();
+        System.out.println(response.getBody().asString());
     }
 }
