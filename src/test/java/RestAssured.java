@@ -1,5 +1,4 @@
 
-
 import com.google.gson.Gson;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
@@ -8,13 +7,9 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static io.restassured.RestAssured.given;
-
 import static io.restassured.RestAssured.registerParser;
 import static org.hamcrest.Matchers.*;
 
