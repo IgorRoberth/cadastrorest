@@ -58,7 +58,7 @@ public class RestAssured {
     }
 
     @Test
-    public void deveSalvarUsuario201() {
+    public void deveCriarUsuario201() {
 
         given()
                 .log().all()
@@ -213,8 +213,8 @@ public class RestAssured {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", "Roberto");
-        credentials.put("senha", "senhaRoberto");
+        credentials.put("username", "Kevin");
+        credentials.put("senha", "senhaKevin");
 
         String jsonCredentials = new Gson().toJson(credentials);
 
@@ -231,7 +231,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeLoginComUsernameE_SenhaEmBranco400() {
+    public void tentativaDeLoginComUsername_E_SenhaEmBranco400() {
 
         // Cria um mapa com as credenciais de usuário
         Map<String, String> credentials = new HashMap<>();
@@ -335,7 +335,7 @@ public class RestAssured {
                 .log().all()
                 .statusCode(400)
                 .contentType("text/plain")
-                .body(Matchers.equalTo("Para concluir o cadastro, é necessário preencher todos os campos."))
+                .body(Matchers.equalTo("Para concluir o cadastro é necessário preencher todos os campos."))
         ;
     }
 
@@ -557,7 +557,7 @@ public class RestAssured {
     }
 
     @Test
-    public void tentativaDeCriarUsuárioComUsernameJaEmUso400() {
+    public void tentativaDeCriarUsuárioComUsernameEmUso400() {
 
         Response response = given()
                 .log().all()
@@ -573,5 +573,288 @@ public class RestAssured {
                 .statusCode(409)
                 .extract().response();
         System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void tentativaDeCriarUsuárioComTelefoneEmUso400() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\":\"Flavio\"," +
+                        "\"email\": \"flavio@email.com\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11978502350\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(409)
+                .extract().response();
+        System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void tentativaDeCriarUsuárioComServidorInoperante500() {
+
+        Response response = given()
+                .log().all()
+                .contentType("application/json")
+                .body("{\"nome\": \"Flavio Flowers\"," +
+                        "\"username\":\"Flavio\"," +
+                        "\"email\": \"flavio@email.com\"," +
+                        "\"senha\": \"senhaFlavio\", " +
+                        "\"telefone\": \"11978508976\"}")
+                .when()
+                .post(baseURI + "/usuarios")
+                .then()
+                .statusCode(500)
+                .extract().response();
+        System.out.println(response.getBody().asString());
+    }
+
+    @Test
+    public void editaUsuarioComMetodoGET405() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros\"," +
+                        "\"username\": \"Carla\"," +
+                        "\"email\": \"carla@gmail.com\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .get(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(405, statusCode);
+
+        String responseBody = response.getBody().asString().toLowerCase();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeEditaUsuarioComCampoNomeVazio400() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"\"," +
+                        "\"username\": \"Carla Blazer\"," +
+                        "\"email\": \"carlab@gmail.com\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(400, statusCode);
+
+        String responseBody = response.getBody().asString().toLowerCase();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeEditaUsuarioComCampoUsernameVazio400() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros de Lima\"," +
+                        "\"username\": \"\"," +
+                        "\"email\": \"carlab@gmail.com\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(400, statusCode);
+
+        String responseBody = response.getBody().asString();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeEditaUsuarioComEmailIndevido400() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros de Lima\"," +
+                        "\"username\": \"Carla Barros\"," +
+                        "\"email\": \"carlab@gmai\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(400, statusCode);
+
+        String responseBody = response.getBody().asString();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeEditaUsuarioComCampoSenhaVazio400() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros de Lima\"," +
+                        "\"username\": \"Carla Barros\"," +
+                        "\"email\": \"carlab@gmail.com\"," +
+                        "\"senha\": \"\", " +
+                        "\"telefone\": \"11988948024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(400, statusCode);
+
+        String responseBody = response.getBody().asString();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeEditaUsuarioComTelefoneInvalido400() {
+
+        Response response = given()
+                .contentType("application/json")
+                .body("{\"nome\": \"Carla Barros de Lima\"," +
+                        "\"username\": \"Carla Barros\"," +
+                        "\"email\": \"carlab@gmail.com\"," +
+                        "\"senha\": \"senhaCarla\", " +
+                        "\"telefone\": \"119889S48024\"}")
+                .when()
+                .put(baseURI + "/usuarios/170")
+                .thenReturn();
+
+        int statusCode = response.getStatusCode();
+        System.out.println("Código de status: " + statusCode);
+        Assert.assertEquals(400, statusCode);
+
+        String responseBody = response.getBody().asString();
+        System.out.println("Resposta do servidor: " + responseBody);
+    }
+
+    @Test
+    public void tetnativaDeLoginComMetodoGET405() {
+
+            // Cria um mapa com as credenciais de usuário
+            Map<String, String> credentials = new HashMap<>();
+            credentials.put("username", "Roberto");
+            credentials.put("senha", "senhaRoberto");
+
+            String jsonCredentials = new Gson().toJson(credentials);
+
+            ValidatableResponse body = given()
+                    .log().all()
+                    .header("Content-Type", "application/json")
+                    .body(jsonCredentials)
+                    .when()
+                    .get(baseURI + "/usuarios/login")
+                    .then()
+                    .statusCode(405)
+                    ;
+            }
+
+    @Test
+    public void tetnativaDeLoginComCampoSenhaVazio400() {
+
+        // Cria um mapa com as credenciais de usuário
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("username", "Kevin");
+        credentials.put("senha", "");
+
+        String jsonCredentials = new Gson().toJson(credentials);
+
+        ValidatableResponse body = given()
+                .log().all()
+                .header("Content-Type", "application/json")
+                .body(jsonCredentials)
+                .when()
+                .post(baseURI + "/usuarios/login")
+                .then()
+                .statusCode(400)
+                .body("erro",Matchers.equalTo("Senha incorreta ou não foi fornecida. Por favor, verifique."))
+                ;
+    }
+
+    @Test
+    public void tetnativaDeLoginComUsernameIncorreto400() {
+
+        // Cria um mapa com as credenciais de usuário
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("username", "Kevin Jorge");
+        credentials.put("senha", "SenhaKevin");
+
+        String jsonCredentials = new Gson().toJson(credentials);
+
+        ValidatableResponse body = given()
+                .log().all()
+                .header("Content-Type", "application/json")
+                .body(jsonCredentials)
+                .when()
+                .post(baseURI + "/usuarios/login")
+                .then()
+                .statusCode(400)
+                .body("erro",Matchers.equalTo("Usuário não encontrado. Por favor, cadastre-se primeiro ou verifique suas credenciais e tente novamente."))
+                ;
+    }
+
+    @Test
+    public void tetnativaDeLoginComSenhaIncorreta400() {
+
+        // Cria um mapa com as credenciais de usuário
+        Map<String, String> credentials = new HashMap<>();
+        credentials.put("username", "Kevin");
+        credentials.put("senha", "Senha");
+
+        String jsonCredentials = new Gson().toJson(credentials);
+
+        ValidatableResponse body = given()
+                .log().all()
+                .header("Content-Type", "application/json")
+                .body(jsonCredentials)
+                .when()
+                .post(baseURI + "/usuarios/login")
+                .then()
+                .statusCode(400)
+                .body("erro",Matchers.equalTo("Senha incorreta ou não foi fornecida. Por favor, verifique."))
+                ;
+    }
+
+    @Test
+    public void tetnativaDeExclusaoComMetodoGET405() {
+
+            given()
+                    .log().all()
+                    .when()
+                    .get(baseURI+"/usuarios/contadelete/Flavio")
+                    .then()
+                    .log().all()
+                    .statusCode(405)
+            ;
+    }
+
+    @Test
+    public void tetnativaDeExclusaoSemInserir_O_Username() {
+
+        given()
+                .log().all()
+                .when()
+                .delete(baseURI+"/usuarios/contadelete/")
+                .then()
+                .log().all()
+                .statusCode(404)
+        ;
     }
 }
