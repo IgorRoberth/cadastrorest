@@ -114,6 +114,4 @@ public class Testes500 extends RestAssured {
                 .extract().response();
         System.out.println(response.getBody().asString());
     }
-
-
 }
